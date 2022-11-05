@@ -43,8 +43,26 @@ class RoomRepository extends Repository<IRoom> {
     return Promise.all(result);
   }
   async getRoomSimpleById(id: string): Promise<IRoom | null> {
-    const room = await RoomModel.findOne({ _id: id }, { messages: 0 }).exec();
+    const room: any = await RoomModel.findOne(
+      { _id: id },
+      { messages: 0 }
+    ).exec();
+    room.messages = [];
     if (!room) return null;
+    return room as unknown as IRoom;
+  }
+  async getRoomSimplePopulate(id: string): Promise<IRoom | null> {
+    const room: any = await RoomModel.findOne({ _id: id }, { messages: 0 })
+      .populate("users._id")
+      .exec();
+    if (room) room.messages = [];
+    if (!room) return null;
+    room.users = room.users?.map((e: any) => {
+      return {
+        missing: e.missing,
+        user: e._id,
+      };
+    });
     return room as unknown as IRoom;
   }
   async getPrivateRoomByUser(myId: string, userId: string) {
@@ -173,7 +191,7 @@ class RoomRepository extends Repository<IRoom> {
     var room = await this.getRoomSimpleById(roomId);
     if (!room) throw new Error(`Room ${roomId} does not exist`);
     const userExist = room.users.find((e) => e._id == userId);
-    if (!userExist) throw new Error("User not permisson");
+    if (userExist) throw new Error("User not permisson");
     await RoomModel.updateOne({ _id: roomId }, { name });
     room.name = name;
     return room;
@@ -182,7 +200,7 @@ class RoomRepository extends Repository<IRoom> {
     var room = await this.getRoomSimpleById(roomId);
     if (!room) throw new Error(`Room ${roomId} does not exist`);
     const userExist = room.users.find((e) => e._id == userId);
-    if (!userExist) throw new Error("User not permisson");
+    if (userExist) throw new Error("User not permisson");
     await RoomModel.updateOne({ _id: roomId }, { avatar });
 
     // delete avatar old
