@@ -193,35 +193,6 @@ module.exports = {
 
     },
 
-    // [GET] /v1/user/notifications/all
-    async getAllNotification(req, res) {
-        try {
-            let user = await User.findById(req.auth.userId)
-                .select('notifications')
-                .populate({
-                    path: 'notifications',
-                    select: '-user',
-                    options: {
-                        sort: {
-                            createdAt: -1
-                        }
-                    }
-                });
-
-            return res.status(200).json({
-                Code: 200,
-                message: 'success',
-                data: user.notifications
-            });
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                Code: 500,
-                message: 'Error at server'
-            });
-        }
-    },
-
     // [GET] /v1/user/notification/check
     async checkNotification(req, res) {
         let { notificationId } = req.query;
@@ -366,6 +337,35 @@ module.exports = {
                 });
             }
         });
+    },
+
+     // [GET] /v1/user/notifications/all
+     async getAllNotification(req, res) {
+        try {
+            let user = await User.findById(req.auth.userId)
+                .select('notifications')
+                .populate({
+                    path: 'notifications',
+                    select: '-user',
+                    options: {
+                        sort: {
+                            createdAt: -1
+                        }
+                    }
+                });
+
+            return res.status(200).json({
+                Code: 200,
+                message: 'success',
+                data: user.notifications
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                Code: 500,
+                message: 'Error at server'
+            });
+        }
     },
 
     // [POST] /v1/user/upload/avatar
