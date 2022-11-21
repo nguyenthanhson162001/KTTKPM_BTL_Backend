@@ -3,36 +3,6 @@ const jwt = require("jsonwebtoken");
 const User = require("..//models/user.model");
 
 module.exports = {
-  async api(req, res, next) {
-    try {
-      let token =
-        req.body.accessToken ||
-        req.query.accessToken ||
-        req.headers["access-token"] ||
-        req.headers["authorization"] ||
-        req.headers.authorization;
-      // console.log("🚀 ~ file: authenJWT.middleware.js ~ line 10 ~ api ~  req.headers", req.headers) // alt + crl +l
-
-      if (!token) throw new Error("Token is not provided");
-
-      let payload = await jwt.verify(token, process.env.SECRET_KEY);
-      if (!payload.isAdmin)
-        throw new Error("Account does not allowed to access");
-      else req.auth = payload;
-      if (!(await User.exists({ _id: payload.userId, deleted: false }))) {
-        throw new Error("User is disable or deleted");
-      }
-
-      next();
-    } catch (err) {
-      console.log(err);
-      console.log(err.name + ": " + err.message);
-      return res.status(401).json({
-        status: "error",
-        message: err.message || "Unauthorized",
-      });
-    }
-  },
 
   async socket(socket, next) {
     try {
@@ -65,6 +35,37 @@ module.exports = {
     } catch (error) {
       console.log(error);
       next(new Error("Unauthorized"));
+    }
+  },
+  
+  async api(req, res, next) {
+    try {
+      let token =
+        req.body.accessToken ||
+        req.query.accessToken ||
+        req.headers["access-token"] ||
+        req.headers["authorization"] ||
+        req.headers.authorization;
+      // console.log("🚀 ~ file: authenJWT.middleware.js ~ line 10 ~ api ~  req.headers", req.headers) // alt + crl +l
+
+      if (!token) throw new Error("Token is not provided");
+
+      let payload = await jwt.verify(token, process.env.SECRET_KEY);
+      if (!payload.isAdmin)
+        throw new Error("Account does not allowed to access");
+      else req.auth = payload;
+      if (!(await User.exists({ _id: payload.userId, deleted: false }))) {
+        throw new Error("User is disable or deleted");
+      }
+
+      next();
+    } catch (err) {
+      console.log(err);
+      console.log(err.name + ": " + err.message);
+      return res.status(401).json({
+        status: "error",
+        message: err.message || "Unauthorized",
+      });
     }
   },
 };

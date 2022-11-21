@@ -6,11 +6,6 @@ const authSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    isAdmin: {
-      type: Boolean,
-      default: false,
-      required: true,
-    },
     isVerified: {
       type: Boolean,
       default: false,
@@ -20,6 +15,11 @@ const authSchema = new mongoose.Schema(
       type: Date,
       default: undefined,
       index: { expireAfterSeconds: 60 * 60 * 24 * 7 },
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+      required: true,
     },
   },
   {
