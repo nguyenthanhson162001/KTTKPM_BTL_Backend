@@ -140,7 +140,7 @@ module.exports = {
                     },
                     successCallback() {
                         return res.status(200).json({
-                            message: 'sucess', errorCode: 200, data: {
+                            message: 'sucess', Code: 200, data: {
                                 roomId,
                                 userId,
                                 username: userSender.username,
@@ -151,7 +151,7 @@ module.exports = {
                     errorCallback(error) {
                         return res.status(400).json({
                             message: error.message,
-                            errorCode: 400
+                            Code: 400
                         });
                     }
                 });
@@ -216,13 +216,13 @@ module.exports = {
                 } catch (error) {
                     return res.status(400).json({
                         message: error.message,
-                        errorCode: 400
+                        Code: 400
                     });
                 }
             },
             successCallback() {
                 return res.status(200).json({
-                    message: 'sucess', errorCode: 200,
+                    message: 'sucess', Code: 200,
                     data: {
                         roomId,
                         messageId
@@ -232,7 +232,7 @@ module.exports = {
             errorCallback(error) {
                 return res.status(400).json({
                     message: error.message,
-                    errorCode: 400
+                    Code: 400
                 });
             }
         });

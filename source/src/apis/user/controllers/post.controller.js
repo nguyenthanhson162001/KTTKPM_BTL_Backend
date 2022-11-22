@@ -90,7 +90,7 @@ module.exports = {
                     errorCallback(error) {
                         return res.status(400).json({
                             message: error.message,
-                            errorCode: 400
+                            Code: 400
                         });
                     }
                 });
@@ -99,7 +99,7 @@ module.exports = {
         } catch (error) {
             return res.status(400).json({
                 message: error.message,
-                errorCode: 400
+                Code: 400
             });
         }
     }
