@@ -17,7 +17,6 @@ app.use(cors());
 app.use(express.static(__dirname + "../../../resources"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "50mb" }));
-app.use(helmet());
 route(app);
 
 const server = require("http").Server(app);
