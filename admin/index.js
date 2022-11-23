@@ -3,7 +3,7 @@ require("./src/configs/database").connect(process.env.DATABASE_CONNECTION);
 const helmet = require("helmet");
 var morgan = require("morgan");
 const route = require("./src/routes");
-
+require("express-async-errors");
 const express = require("express");
 const cors = require("cors");
 
