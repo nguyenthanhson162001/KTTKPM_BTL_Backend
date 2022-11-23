@@ -2,6 +2,23 @@ const mongoose = require('mongoose');
 
 
 module.exports = {
+    async commitWithRetry(session) {
+        try {
+            await session.commitTransaction();
+            console.log('Transaction committed.');
+        } catch (error) {
+            if (error.hasErrorLabel('UnknownTransactionCommitResult')) {
+                console.log('UnknownTransactionCommitResult, retrying commit operation ...');
+                await commitWithRetry(session);
+            } else if (error.hasErrorLabel('TransientTransactionError')) {
+                console.log('TransientTransactionError, retrying commit operation ...');
+                await commitWithRetry(session);
+            } else {
+                console.log('Error during commit ...');
+                throw error;
+            }
+        }
+    },
     // cho phép excute các hàm bất đồng bộ, -> có thể hoàn thành các tác vụ dù trong đó có 1 tác vụ thất bại
     async executeTransactionWithRetry({ executeCallback, successCallback, errorCallback }) {
         try {
@@ -36,21 +53,4 @@ module.exports = {
             errorCallback(error);
         }
     },
-    async commitWithRetry(session) {
-        try {
-            await session.commitTransaction();
-            console.log('Transaction committed.');
-        } catch (error) {
-            if (error.hasErrorLabel('UnknownTransactionCommitResult')) {
-                console.log('UnknownTransactionCommitResult, retrying commit operation ...');
-                await commitWithRetry(session);
-            } else if (error.hasErrorLabel('TransientTransactionError')) {
-                console.log('TransientTransactionError, retrying commit operation ...');
-                await commitWithRetry(session);
-            } else {
-                console.log('Error during commit ...');
-                throw error;
-            }
-        }
-    }
 };

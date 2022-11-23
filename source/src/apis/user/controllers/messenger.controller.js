@@ -32,9 +32,6 @@ async function validateRoom(roomId, user1, user2) {
     return false;
 }
 
-// config path 
-const path = require('path');
-
 const storage = multer.memoryStorage({
     destination: (req, file, cb) => {
         cb(null, "");
@@ -46,6 +43,10 @@ const storage = multer.memoryStorage({
 const upload = multer({ storage, limits: { fileSize: 20000000 } }).single(
     "file"
 );
+
+// config path 
+const path = require('path');
+
 
 module.exports = {
 
@@ -161,6 +162,7 @@ module.exports = {
         }
     },
 
+    
     //[POST] /v1/messages/delete
     async deleteMessagse(req, res) {
         const { messageId, roomId } = req.body;
