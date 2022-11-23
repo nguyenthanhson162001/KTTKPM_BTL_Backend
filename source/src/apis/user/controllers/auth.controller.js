@@ -67,8 +67,8 @@ module.exports = {
             },
             successCallback() {
                 return res.status(201).json({
-                    message: 'Account is created',
-                    errorCode: 201
+                    message: 'Account is created !!!',
+                    Code: 201
                 });
             },
             errorCallback(error) {
@@ -76,16 +76,16 @@ module.exports = {
                 if (error?.message == 400)
                     return res.status(400).json({
                         message: 'Missing parameters',
-                        errorCode: 400
+                        Code: 400
                     });
                 if (error?.name === 'Error')
                     return res.status(400).json({
                         message: error.message,
-                        errorCode: 400
+                        Code: 400
                     });
                 res.status(500).json({
                     message: error.message,
-                    errorCode: 500
+                    Code: 500
                 });
             }
         });
@@ -98,7 +98,7 @@ module.exports = {
             if (!(username || email))
                 return res.status(400).json({
                     message: 'Missing parameters',
-                    errorCode: 400
+                    Code: 400
                 });
 
             //find user
@@ -112,14 +112,14 @@ module.exports = {
             if (!user)
                 return res.status(400).json({
                     message: 'Not contain account using this username or email',
-                    errorCode: 400
+                    Code: 400
                 });
 
             // verify email already
             if (user.auth.isVerified && req.originalUrl.includes('auth/request/verify-email'))
                 return res.status(200).json({
                     message: 'Email is verified already before',
-                    errorCode: 400
+                    Code: 400
                 });
 
             let token = jwt.sign(
@@ -143,13 +143,13 @@ module.exports = {
 
             res.status(201).json({
                 message: 'Verification email is send',
-                errorCode: 201
+                Code: 201
             });
         } catch (error) {
             console.log(error.message);
             res.status(500).json({
                 message: error.message,
-                errorCode: 501
+                Code: 501
             });
         }
     },
@@ -160,7 +160,7 @@ module.exports = {
             const token = req.params.token;
             console.log(token)
 
-            if (!token) return res.status(400).json({ message: 'Missing parameters', errorCode: 400 });
+            if (!token) return res.status(400).json({ message: 'Missing parameters', Code: 400 });
 
             console.log(`Token: ${token}`)
 
@@ -200,19 +200,19 @@ module.exports = {
 
             if (tokenErr)
                 return res.status(400).json({
-                    message: 'Token is invalid' + tokenErr,
-                    errorCode: 400
+                    message: 'Token is invalid: ' + tokenErr,
+                    Code: 400
                 });
 
             return res.status(200).json({
                 message: 'Email is verified',
-                errorCode: 200
+                Code: 200
             });
         } catch (error) {
             console.log(error);
             return res.status(500).json({
                 message: error.message,
-                errorCode: 500
+                Code: 500
             });
         }
     },
@@ -224,7 +224,7 @@ module.exports = {
             const { username, email, password } = req.body;
 
             if (!((username || email) && password))
-                return res.status(400).json({ message: 'Missing parameters', errorCode: 400 });
+                return res.status(400).json({ message: 'Missing parameters', Code: 400 });
 
             let user = await User.findOne({
                 $or: [{ username }, { email }]
@@ -235,14 +235,14 @@ module.exports = {
             if (!user)
                 return res.status(400).json({
                     message: 'Username or email is not found',
-                    errorCode: 400
+                    Code: 400
                 });
 
             // Check password
             if (!crypto.match(user.auth.password, password))
                 return res.status(401).json({
                     message: 'Password is wrong',
-                    errorCode: 401
+                    Code: 401
                 });
 
             if (user.auth.isVerified === false) {
@@ -266,9 +266,10 @@ module.exports = {
 
                 return res.status(307).json({
                     message: 'Verify email of account',
-                    errorCode: 400,
+                    Code: 400,
                     data: {
-                        email: user.auth.email
+                        email: user.auth.email,
+                        token: token,
                     }
                 });
             }
@@ -298,10 +299,9 @@ module.exports = {
 
             res.status(200).json({
                 message: 'Login successful',
-                errorCode: 200,
+                Code: 200,
                 data: {
                     accessToken,
-                    refreshToken,
                     user
                 }
             });
@@ -309,7 +309,7 @@ module.exports = {
             console.log(error.message);
             res.status(500).json({
                 message: error.message,
-                errorCode: 500
+                Code: 500
             });
         }
     },
@@ -319,7 +319,7 @@ module.exports = {
         try {
             let { refreshToken } = req.body;
 
-            if (!refreshToken) return res.status(400).json({ message: 'Missing parameters', errorCode: 400 });
+            if (!refreshToken) return res.status(400).json({ message: 'Missing parameters', Code: 400 });
 
             let token = await Token.findOne({
                 refreshToken
@@ -327,7 +327,7 @@ module.exports = {
             if (!token)
                 return res.status(200).json({
                     message: 'Refresh token does not exist',
-                    errorCode: 200
+                    Code: 200
                 });
 
             let errorMessage;
@@ -344,7 +344,7 @@ module.exports = {
                 });
                 return res.status(400).json({
                     message: errorMessage,
-                    errorCode: 400
+                    Code: 400
                 });
             }
 
@@ -354,7 +354,7 @@ module.exports = {
 
             res.status(201).json({
                 message: "Refresh successful",
-                errorCode: 201,
+                Code: 201,
                 data: {
                     accessToken: newAccessToken,
                     refreshToken
@@ -364,7 +364,7 @@ module.exports = {
             console.log(error);
             res.status(500).json({
                 message: error.message,
-                errorCode: 500
+                Code: 500
             });
         }
     },
@@ -375,7 +375,7 @@ module.exports = {
             let { token, newPassword } = req.body;
 
             if (!(token && newPassword))
-                return res.status(400).json({ message: 'Missing parameters', errorCode: 400 });
+                return res.status(400).json({ message: 'Missing parameters', Code: 400 });
 
             let tokenErr;
             await jwt.verify(
@@ -400,18 +400,18 @@ module.exports = {
                 if (tokenErr.name === 'Error') throw tokenErr;
                 return res.status(400).json({
                     message: 'Token is invalid or expired',
-                    errorCode: 400
+                    Code: 400
                 });
             }
             res.status(200).json({
                 message: 'Password is updated',
-                errorCode: 200
+                Code: 200
             });
         } catch (error) {
             console.log(error.message);
             res.status(500).json({
                 message: error.message,
-                errorCode: 500
+                Code: 500
             });
         }
     },
@@ -422,7 +422,7 @@ module.exports = {
             const { username, email } = req.body;
 
             if (!(username || email))
-                return res.status(400).json({ message: 'Missing parameters', errorCode: 400 });
+                return res.status(400).json({ message: 'Missing parameters', Code: 400 });
 
             let user = await User.findOne({
                 $or: [{ username }, { email }]
@@ -431,7 +431,7 @@ module.exports = {
             if (!user)
                 return res.status(400).json({
                     message: 'Not found an account with this username (or email)',
-                    errorCode: 400
+                    Code: 400
                 });
 
             let token = jwt.sign(
@@ -454,7 +454,7 @@ module.exports = {
 
             res.status(200).json({
                 message: 'Reset password email is send',
-                errorCode: 400,
+                Code: 400,
                 data: {
                     email: user.email
                 }
@@ -463,7 +463,7 @@ module.exports = {
             console.log(error.message);
             res.status(500).json({
                 message: error.message,
-                errorCode: 500
+                Code: 500
             });
         }
     },

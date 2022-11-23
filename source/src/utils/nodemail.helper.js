@@ -20,19 +20,12 @@ const sendVerify = async ({ to, username, token }) => {
         let mailOptions = {
             from: process.env.OUR_EMAIL,
             to,
-            subject: 'peguingram verification email',
+            subject: 'verification email',
             html: await hbs.render('./src/templates/verify_mail.hbs', {
                 token,
                 username,
                 clientDomain: 'http://192.168.241.16:3000/v1'
             }),
-            attachments: [
-                {
-                    filename: 'hinh1.jpg',
-                    path: './resources/images/hinh4.jpg',
-                    cid: 'logo_image'
-                }
-            ]
         };
         transporter.sendMail(mailOptions, (err, info) => {
             if (err) console.log(err);

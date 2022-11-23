@@ -137,7 +137,7 @@ module.exports = {
             },
             successCallback() {
                 return res.status(200).json({
-                    message: 'sucess', errorCode: 200,
+                    message: 'sucess', Code: 200,
                     data: {
                         pinMessage
                     }
@@ -147,7 +147,7 @@ module.exports = {
                 console.log("🚀 ~ file: messenger.controller.js ~ line 210 ~ errorCallback ~ error", error)
                 return res.status(400).json({
                     message: error.message,
-                    errorCode: 400
+                    Code: 400
                 });
             }
         });
@@ -386,7 +386,7 @@ module.exports = {
             },
             successCallback() {
                 return res.status(200).json({
-                    errorCode: 200,
+                    Code: 200,
                     data: {
                         room,
                         userIdsTemp
@@ -397,7 +397,7 @@ module.exports = {
             errorCallback(error) {
                 console.log(error);
                 return res.status(400).json({
-                    errorCode: 400,
+                    Code: 400,
                     message: error.message
                 });
             }

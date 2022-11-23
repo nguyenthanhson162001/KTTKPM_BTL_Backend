@@ -68,14 +68,14 @@ module.exports = {
                     post.imgs = resourceHelper.getListPostImages(post._id.toString());
                 });
                 res.status(200).json({
-                    errorCode: 200,
+                    Code: 200,
                     data
                 });
             })
             .catch(err => {
                 console.log(err);
                 res.status(500).json({
-                    errorCode: 500,
+                    Code: 500,
                     message: 'Error at server'
                 });
             });
@@ -85,7 +85,7 @@ module.exports = {
     getUserProfile(req, res) {
         let userId = req.params.userId;
 
-        if (!userId) return res.status(400).json({ message: 'Missing parameters', errorCode: 400 });
+        if (!userId) return res.status(400).json({ message: 'Missing parameters', Code: 400 });
 
         Promise.all([
             User.findById(userId)
@@ -108,7 +108,7 @@ module.exports = {
             .then(([data, mine, request]) => {
                 if (!data)
                     return res.status(400).json({
-                        errorCode: 400,
+                        Code: 400,
                         message: 'Data not found'
                     });
                 data.posts.forEach(post => {
@@ -117,7 +117,7 @@ module.exports = {
                 data.isFriend = objectIdHelper.include(mine.friends, data._id);
                 if (!data.isFriend) data.addFriendRequest = request ? true : false;
                 res.status(200).json({
-                    errorCode: 200,
+                    Code: 200,
                     message: 'success',
                     data
                 });
@@ -125,7 +125,7 @@ module.exports = {
             .catch(err => {
                 console.log(err);
                 res.status(500).json({
-                    errorCode: 500,
+                    Code: 500,
                     message: 'Error at server'
                 });
             });
@@ -138,7 +138,7 @@ module.exports = {
             console.log("🚀 ~ file: user.controller.js ~ line 118 ~ searchUser ~ keyword", keyword)
             if (!keyword)
                 return res.status(400).json({
-                    errorCode: 400,
+                    Code: 400,
                     message: 'Invalid keyword'
                 });
 
@@ -152,7 +152,7 @@ module.exports = {
             console.log("🚀 ~ file: user.controller.js ~ line 128 ~ searchUser ~ result", result)
             return res.status(200).json({
                 message: 'success',
-                errorCode: 200,
+                Code: 200,
                 data: result
             });
         } catch (error) {
@@ -179,14 +179,14 @@ module.exports = {
             .lean()
             .then(data => {
                 res.status(200).json({
-                    errorCode: 200,
+                    Code: 200,
                     data
                 });
             })
             .catch(err => {
                 console.log(err);
                 res.status(500).json({
-                    errorCode: 500,
+                    Code: 500,
                     message: 'Error at server'
                 });
             });
@@ -209,14 +209,14 @@ module.exports = {
                 });
 
             return res.status(200).json({
-                errorCode: 200,
+                Code: 200,
                 message: 'success',
                 data: user.notifications
             });
         } catch (error) {
             console.log(error);
             return res.status(500).json({
-                errorCode: 500,
+                Code: 500,
                 message: 'Error at server'
             });
         }
@@ -226,7 +226,7 @@ module.exports = {
     async checkNotification(req, res) {
         let { notificationId } = req.query;
 
-        if (!notificationId) return res.status(400).json({ errorCode: 400, message: 'Missing parameters' });
+        if (!notificationId) return res.status(400).json({ Code: 400, message: 'Missing parameters' });
 
         let user = undefined,
             post = undefined,
@@ -341,7 +341,7 @@ module.exports = {
             },
             successCallback() {
                 return res.status(200).json({
-                    errorCode: 200,
+                    Code: 200,
                     message: 'success',
                     data: {
                         user,
@@ -354,14 +354,14 @@ module.exports = {
             errorCallback(error) {
                 console.log(error);
                 if (error?.message == 400)
-                    return res.status(400).json({ errorCode: 400, message: 'Missing parameters' });
+                    return res.status(400).json({ Code: 400, message: 'Missing parameters' });
                 if (error.name === 'Error')
                     return res.status(200).json({
-                        errorCode: 400,
+                        Code: 400,
                         message: error.message
                     });
                 return res.status(500).json({
-                    errorCode: 500,
+                    Code: 500,
                     message: 'Error at server'
                 });
             }
@@ -395,14 +395,14 @@ module.exports = {
                     throw new Error('Update data fail!');
                 return res.status(200).json({
                     message: 'upload avatar success',
-                    errorCode: 200
+                    Code: 200
                 });
             });
         } catch (err) {
             console.log(err)
             return res.status(400).json({
                 message: err.message,
-                errorCode: 400
+                Code: 400
             });
         }
     },
@@ -545,7 +545,7 @@ module.exports = {
             },
             successCallback() {
                 return res.status(200).json({
-                    errorCode: 200,
+                    Code: 200,
                     message: 'success',
                     data: {
                         requestedUserId,
@@ -556,7 +556,7 @@ module.exports = {
             errorCallback: error => {
                 console.log(error);
                 res.status(400).json({
-                    errorCode: 400,
+                    Code: 400,
                     message: error.message
                 });
             }
@@ -818,13 +818,13 @@ module.exports = {
             },
             successCallback() {
                 res.status(200).json({
-                    errorCode: 200,
+                    Code: 200,
                     message: 'User has been edited',
                 });
             },
             errorCallback(error) {
                 return res.status(400).json({
-                    errorCode: 400,
+                    Code: 400,
                     message: error.message
                 });
             }
