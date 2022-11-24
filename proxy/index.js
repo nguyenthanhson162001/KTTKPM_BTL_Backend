@@ -30,8 +30,8 @@ const options = {
     "^/": "/", // rewrite path
   },
   router: {
-    "/": serverAPI,
     "/admin": serverAdmin,
+    "/": serverAPI,
   },
   onProxyReqWs: (proxyReq, req, socket) => {
     socket.on("error", function (error) {
